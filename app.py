@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load a pretrained model to extract image features
-model = models.resnet18(pretrained=True)
+model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
 model.eval()
 # Remove the final classification layer — we just want features
 feature_extractor = torch.nn.Sequential(*list(model.children())[:-1])
