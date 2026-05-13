@@ -133,7 +133,7 @@ function onCircleDetected() {
     const match = data.similarity >= 0.75;
     setStatus(
       match
-        ? `✦ Sigil recognised — ${pct}% match`
+        ? `✦ ${data.message} — ${pct}% match`
         : `✧ No match — ${pct}% similarity`,
       match ? 'success' : 'error'
     );
