@@ -11,58 +11,102 @@ import torchvision.models as models
 app = Flask(__name__)
 CORS(app)
 
-# Load a pretrained model to extract image features
+# Load pretrained ResNet18 model
 model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
 model.eval()
-# Remove the final classification layer — we just want features
+
+# Remove final classification layer to get feature vectors
 feature_extractor = torch.nn.Sequential(*list(model.children())[:-1])
 
+# Image transformation
 transform = T.Compose([
     T.Resize((224, 224)),
     T.ToTensor(),
 ])
 
+
+def preprocess(img: Image.Image):
+    """Remove transparency and convert to grayscale."""
+    # Convert to RGBA to handle transparent backgrounds
+    img = img.convert("RGBA")
+
+    # Create a white background
+    background = Image.new("RGBA", img.size, (255, 255, 255, 255))
+
+    # Paste original image onto white background using alpha channel
+    background.paste(img, mask=img.split()[3])
+
+    # Convert to grayscale
+    img = background.convert("L")
+
+    return img
+
+
 def get_features(img: Image.Image):
-    """Convert a PIL image to a feature vector."""
+    """Convert a PIL image to a 512-dimensional feature vector."""
+    # Preprocess image
+    img = preprocess(img)
+
+    # ResNet expects RGB input
     img = img.convert("RGB")
-    tensor = transform(img).unsqueeze(0)  # shape: [1, 3, 224, 224]
+
+    # Convert image to tensor
+    tensor = transform(img).unsqueeze(0)
+
+    # Extract features
     with torch.no_grad():
         features = feature_extractor(tensor)
-    return features.squeeze()  # shape: [512]
+
+    # Flatten to shape [512]
+    return features.squeeze()
+
 
 def load_glyphs():
-    """Load all glyph images from the glyphs/ folder."""
+    """Load all glyph images from the glyphs folder."""
     glyphs = {}
-    glyphs_dir = os.path.join(os.path.dirname(__file__), 'glyphs')
+    glyphs_dir = os.path.join(os.path.dirname(__file__), "glyphs")
+
     for filename in os.listdir(glyphs_dir):
-        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+        if filename.lower().endswith((".png", ".jpg", ".jpeg")):
             path = os.path.join(glyphs_dir, filename)
             img = Image.open(path)
-            name = os.path.splitext(filename)[0]  # e.g. "fire", "water"
+
+            # Filename without extension becomes glyph name
+            name = os.path.splitext(filename)[0]
+
+            # Extract and store features
             glyphs[name] = get_features(img)
+
     return glyphs
 
-# Pre-load glyphs at startup
+
+# Preload glyphs at startup
 GLYPHS = load_glyphs()
 
-@app.route('/detect', methods=['POST'])
+MESSAGES = {
+    'Light_Beam': 'Light Beam whoosh',
+    # add more here, name must match your image filename
+}
+
+
+@app.route("/detect", methods=["POST"])
 def detect():
-    # 1. Get the image from the browser
+    # Get JSON data from browser
     data = request.json
-    image_base64 = data['image']  # ✅ fixed key!
+    image_base64 = data["image"]
 
-    # 2. Strip the data URL header (e.g. "data:image/png;base64,...")
-    if ',' in image_base64:
-        image_base64 = image_base64.split(',')[1]
+    # Remove data URL prefix if present
+    if "," in image_base64:
+        image_base64 = image_base64.split(",")[1]
 
-    # 3. Decode base64 → PIL Image
+    # Decode base64 image
     image_bytes = base64.b64decode(image_base64)
     drawn_img = Image.open(io.BytesIO(image_bytes))
 
-    # 4. Get features of the drawn image
+    # Extract features from drawn image
     drawn_features = get_features(drawn_img)
 
-    # 5. Compare against every glyph using cosine similarity
+    # Find best matching glyph
     best_match = None
     best_score = -1.0
 
@@ -71,14 +115,20 @@ def detect():
             drawn_features.unsqueeze(0),
             glyph_features.unsqueeze(0)
         ).item()
+
         if score > best_score:
             best_score = score
             best_match = name
 
+    # Return result
+    message = MESSAGES.get(best_match, 'An unknown sigil stirs...')
+
     return jsonify({
         'match': best_match,
-        'similarity': round(best_score, 4)
+        'similarity': round(best_score, 4),
+        'message': message
     })
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
