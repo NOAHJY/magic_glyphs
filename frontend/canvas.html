@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sigil Detector</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="overlay"></div>
+
+  <main class="container">
+    <header>
+      <h1>Sigil Detector</h1>
+      <p>Draw your sigil, then encircle it to invoke</p>
+    </header>
+
+    <div class="canvas-wrap">
+      <canvas id="c" width="600" height="600"></canvas>
+      <div id="flash" class="flash"></div>
+    </div>
+
+    <div class="controls">
+      <div class="brush-control">
+        <label for="brushSize">Brush</label>
+        <input type="range" min="1" max="10" value="3" id="brushSize" />
+        <span id="brushLabel">3</span>
+      </div>
+      <button id="clearBtn">Clear</button>
+    </div>
+
+    <div id="statusMsg" class="status"></div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

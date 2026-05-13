@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;1,300&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: url('background.png') center / cover no-repeat fixed;
+  padding: 24px;
+}
+
+/* Dark overlay on background */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 660px;
+}
+
+/* Header */
+header {
+  text-align: center;
+}
+
+header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 600;
+  color: #e8d9b0;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 30px rgba(220, 180, 80, 0.5);
+  margin-bottom: 6px;
+}
+
+header p {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: rgba(220, 200, 160, 0.7);
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+
+/* Canvas wrapper */
+.canvas-wrap {
+  position: relative;
+  width: min(90vw, 600px);
+  height: min(90vw, 600px);
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(255, 252, 240, 0.08);
+  border: 1.5px solid rgba(220, 180, 80, 0.35);
+  cursor: crosshair;
+  touch-action: none;
+  box-shadow:
+    0 0 0 1px rgba(220, 180, 80, 0.1),
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 24px 80px rgba(0, 0, 0, 0.4),
+    inset 0 0 60px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+/* Flash effect on circle detect */
+.flash {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: rgba(180, 220, 100, 0.15);
+  box-shadow: inset 0 0 60px rgba(180, 220, 100, 0.2);
+}
+
+/* Controls row */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.brush-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brush-control label {
+  font-size: 0.85rem;
+  color: rgba(220, 200, 160, 0.7);
+  letter-spacing: 0.05em;
+  font-family: 'Cinzel', serif;
+}
+
+.brush-control input[type="range"] {
+  width: 100px;
+  accent-color: #c9a84c;
+}
+
+.brush-control span {
+  font-size: 0.85rem;
+  color: #e8d9b0;
+  min-width: 16px;
+  text-align: center;
+}
+
+button {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 8px 24px;
+  background: transparent;
+  color: rgba(220, 200, 160, 0.8);
+  border: 1px solid rgba(220, 180, 80, 0.35);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background: rgba(220, 180, 80, 0.1);
+  color: #e8d9b0;
+  border-color: rgba(220, 180, 80, 0.6);
+}
+
+/* Status message */
+.status {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: rgba(220, 200, 160, 0.7);
+  min-height: 22px;
+  text-align: center;
+  letter-spacing: 0.03em;
+  transition: color 0.3s;
+}
+
+.status.success { color: #7ec87e; }
+.status.error   { color: #e07070; }
+.status.info    { color: rgba(220, 200, 160, 0.7); }
+
+/* Responsive */
+@media (max-width: 480px) {
+  body { padding: 16px; }
+  .controls { gap: 14px; }
+  .brush-control input[type="range"] { width: 80px; }
+}
