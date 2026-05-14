@@ -92,9 +92,6 @@ MESSAGES = {
     # add more here, name must match your image filename
 }
 
-MESSAGES = {
-    'sigil': 'The sigil is recognised!',
-}
 
 ESP32_IP = "http://192.168.1.100"  # change later
 
@@ -148,15 +145,6 @@ def detect():
         'message': message
     })
 
-
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-    
-# Store the latest command
-current_command = None
-
 @app.route('/get-command', methods=['GET'])
 def get_command():
     global current_command
@@ -170,3 +158,9 @@ def get_command():
     cmd = current_command
     current_command = None
     return jsonify({ 'command': cmd })
+
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+    
