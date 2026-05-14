@@ -3,11 +3,12 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-const char* ssid      = "bukankah ini my WiFi";
+const char* ssid      = "my WiFi 2.4G";
 const char* password  = "23571113";
 const char* serverURL = "https://web-production-f9ef2.up.railway.app/get-command";
 
-const int LED_PIN = 16;
+const int LED_PIN = 4;
+const int led2 = 2;
 
 void handleCommand(String command) {
   if (command == "/star") {
@@ -20,11 +21,20 @@ void handleCommand(String command) {
       delay(200);
     }
   }
-  else if (command == "/light_beam") {
+  else if (command == "/light") {
     // Stay on for 10 seconds
     digitalWrite(LED_PIN, HIGH);
     delay(10000);
     digitalWrite(LED_PIN, LOW);
+  }
+  else if (command == "/love"){
+    // Blinking 2 lights
+    digitalWrite(LED_PIN, HIGH);
+    digitalWrite(led2, LOW);
+    delay(500);
+    digitalWrite(LED_PIN, LOW);
+    digitalWrite(led2, HIGH);
+    delay(500);
   }
 }
 
@@ -38,6 +48,10 @@ void setup() {
     Serial.print(".");
   }
   Serial.println("WiFi connected!");
+  // Test LED at startup
+  digitalWrite(LED_PIN, HIGH);
+  delay(1000);
+  digitalWrite(LED_PIN, LOW);
 }
 
 void loop() {
@@ -52,9 +66,11 @@ void loop() {
     deserializeJson(doc, payload);
     String command = doc["command"].as<String>();
     if (command != "null") {
+      Serial.println("Command received: " + command);
       handleCommand(command);
     }
   }
   http.end();
   delay(2000);
+  
 }

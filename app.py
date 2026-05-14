@@ -87,8 +87,9 @@ GLYPHS = load_glyphs()
 current_command = None
 
 MESSAGES = {
-    'Light_Beam': 'Light Beam whoosh',
-    'Star': "Flash led magic"
+    'light': 'Light',
+    'star': "Star",
+    'love': "Love",
     # add more here, name must match your image filename
 }
 
@@ -96,8 +97,9 @@ MESSAGES = {
 ESP32_IP = "http://192.168.1.100"  # change later
 
 ESP32_ACTIONS = {
-    'Light_Beam': '/light_beam',
-    'Star': '/star',
+    'light': '/light',
+    'star': '/star',
+    'love': '/love',
 }
 
 
