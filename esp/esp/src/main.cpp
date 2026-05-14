@@ -3,16 +3,27 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-const char* ssid     = "bukankah ini my WiFi";
-const char* password = "23571113";
-const char* serverURL = "web-production-f9ef2.up.railway.app";
+const char* ssid      = "bukankah ini my WiFi";
+const char* password  = "23571113";
+const char* serverURL = "https://web-production-f9ef2.up.railway.app/get-command";
 
-const int LED_PIN = 2;
+const int LED_PIN = 16;
 
 void handleCommand(String command) {
   if (command == "/star") {
+    // Blink for 10 seconds
+    unsigned long start = millis();
+    while (millis() - start < 10000) {
+      digitalWrite(LED_PIN, HIGH);
+      delay(200);
+      digitalWrite(LED_PIN, LOW);
+      delay(200);
+    }
+  }
+  else if (command == "/light_beam") {
+    // Stay on for 10 seconds
     digitalWrite(LED_PIN, HIGH);
-    delay(1000);
+    delay(10000);
     digitalWrite(LED_PIN, LOW);
   }
 }
@@ -31,7 +42,8 @@ void setup() {
 
 void loop() {
   HTTPClient http;
-  http.setTimeout(30000);  // 30 seconds timeout in milliseconds
+  http.begin(serverURL);
+  http.setTimeout(30000);
   int httpCode = http.GET();
 
   if (httpCode == 200) {
@@ -44,5 +56,5 @@ void loop() {
     }
   }
   http.end();
-  delay(2000);  // ask every 2 seconds
+  delay(2000);
 }

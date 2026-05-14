@@ -96,6 +96,7 @@ MESSAGES = {
 ESP32_IP = "http://192.168.1.100"  # change later
 
 ESP32_ACTIONS = {
+    'Light_Beam': '/light_beam',
     'Star': '/star',
 }
 
