@@ -135,7 +135,7 @@ def detect():
             best_match = name
 
     # Return result
-    message = MESSAGES.get(best_match, 'An unknown sigil stirs...')
+    # message = MESSAGES.get(best_match, 'An unknown sigil stirs...')
     
     action = ESP32_ACTIONS.get(best_match)
     if action and best_score >= 0.75:
