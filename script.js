@@ -122,7 +122,7 @@ function onCircleDetected() {
   // Send canvas image to Python backend
   const imageData = canvas.toDataURL('image/png');
 
-  fetch('http://localhost:5000/detect', {
+  fetch('https://web-production-f9ef2.up.railway.app/detect', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ image: imageData }),
