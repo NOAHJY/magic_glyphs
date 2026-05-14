@@ -7,6 +7,7 @@ import os
 import torch
 import torchvision.transforms as T
 import torchvision.models as models
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -83,9 +84,22 @@ def load_glyphs():
 # Preload glyphs at startup
 GLYPHS = load_glyphs()
 
+current_command = None
+
 MESSAGES = {
     'Light_Beam': 'Light Beam whoosh',
+    'Star': "Flash led magic"
     # add more here, name must match your image filename
+}
+
+MESSAGES = {
+    'sigil': 'The sigil is recognised!',
+}
+
+ESP32_IP = "http://192.168.1.100"  # change later
+
+ESP32_ACTIONS = {
+    'Star': '/star',
 }
 
 
@@ -122,6 +136,11 @@ def detect():
 
     # Return result
     message = MESSAGES.get(best_match, 'An unknown sigil stirs...')
+    
+    action = ESP32_ACTIONS.get(best_match)
+    if action and best_score >= 0.75:
+        global current_command
+        current_command = action
 
     return jsonify({
         'match': best_match,
@@ -134,3 +153,20 @@ if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+    
+# Store the latest command
+current_command = None
+
+@app.route('/get-command', methods=['GET'])
+def get_command():
+    global current_command
+    timeout = 25  # seconds
+    elapsed = 0
+    
+    while current_command is None and elapsed < timeout:
+        time.sleep(0.5)
+        elapsed += 0.5
+    
+    cmd = current_command
+    current_command = None
+    return jsonify({ 'command': cmd })
